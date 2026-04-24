@@ -17,7 +17,7 @@ export default function Insights() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return handleLogout();
-        const res = await axios.get('http://localhost:3000/api/insights/phase1', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get('https://cashcue-api.onrender.com/api/insights/phase1', { headers: { Authorization: `Bearer ${token}` } });
         setInsights(res.data);
       } catch (error) {
         if (error.response?.status === 401) handleLogout();

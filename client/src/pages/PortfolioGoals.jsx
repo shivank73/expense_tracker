@@ -35,9 +35,9 @@ export default function PortfolioGoals() {
         const token = localStorage.getItem('token');
         if (!token) return handleLogout();
         
-        const fetchGoals = axios.get('http://localhost:3000/api/goals', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }));
-        const fetchAssets = axios.get('http://localhost:3000/api/portfolio', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { assets: [] } }));
-        const fetchHoldings = axios.get('http://localhost:3000/api/portfolio/holdings', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }));
+        const fetchGoals = axios.get('https://cashcue-api.onrender.com/api/goals', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }));
+        const fetchAssets = axios.get('https://cashcue-api.onrender.com/api/portfolio', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { assets: [] } }));
+        const fetchHoldings = axios.get('https://cashcue-api.onrender.com/api/portfolio/holdings', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }));
 
         const [goalsRes, assetsRes, holdingsRes] = await Promise.all([fetchGoals, fetchAssets, fetchHoldings]);
         
@@ -92,8 +92,8 @@ export default function PortfolioGoals() {
         }
       }
 
-      const res = await axios.post('http://localhost:3000/api/goals', payload, { headers: { Authorization: `Bearer ${token}` } });
-      const freshGoals = await axios.get('http://localhost:3000/api/goals', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post('https://cashcue-api.onrender.com/api/goals', payload, { headers: { Authorization: `Bearer ${token}` } });
+      const freshGoals = await axios.get('https://cashcue-api.onrender.com/api/goals', { headers: { Authorization: `Bearer ${token}` } });
       setGoals(Array.isArray(freshGoals.data) ? freshGoals.data : []);
       
       if (!selectedAnalyticsId) setSelectedAnalyticsId(res.data.id);
@@ -122,9 +122,9 @@ export default function PortfolioGoals() {
     setProcessingId(goalId);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:3000/api/goals/${goalId}/inject`, { sourceType: selectedSource.pipeType, sourceId: allocator.sourceId, amount: finalAmount }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`https://cashcue-api.onrender.com/api/goals/${goalId}/inject`, { sourceType: selectedSource.pipeType, sourceId: allocator.sourceId, amount: finalAmount }, { headers: { Authorization: `Bearer ${token}` } });
       
-      const res = await axios.get('http://localhost:3000/api/goals', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get('https://cashcue-api.onrender.com/api/goals', { headers: { Authorization: `Bearer ${token}` } });
       const newGoals = Array.isArray(res.data) ? res.data : [];
       setGoals(newGoals);
       
@@ -137,7 +137,7 @@ export default function PortfolioGoals() {
   const toggleLock = async (goalId, currentLockState) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:3000/api/goals/${goalId}/lock`, { isLocked: !currentLockState }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.patch(`https://cashcue-api.onrender.com/api/goals/${goalId}/lock`, { isLocked: !currentLockState }, { headers: { Authorization: `Bearer ${token}` } });
       setGoals(goals.map(g => g.id === goalId ? { ...g, isLocked: !currentLockState } : g));
     } catch (error) {}
   };
@@ -147,7 +147,7 @@ export default function PortfolioGoals() {
     setProcessingId(goalId);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/api/goals/${goalId}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`https://cashcue-api.onrender.com/api/goals/${goalId}`, { headers: { Authorization: `Bearer ${token}` } });
       const newGoals = goals.filter(g => g.id !== goalId);
       setGoals(newGoals);
       if (selectedAnalyticsId === goalId) setSelectedAnalyticsId(newGoals[0]?.id || '');

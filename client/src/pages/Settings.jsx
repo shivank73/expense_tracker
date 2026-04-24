@@ -21,7 +21,7 @@ export default function Settings() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return handleLogout();
-        const res = await axios.get('http://localhost:3000/api/settings', { 
+        const res = await axios.get('https://cashcue-api.onrender.com/api/settings', { 
           headers: { Authorization: `Bearer ${token}` } 
         });
         setSettings(res.data);
@@ -41,7 +41,7 @@ export default function Settings() {
   const handlePreferenceChange = async (key, value) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.patch('http://localhost:3000/api/settings/preferences', { [key]: value }, {
+      await axios.patch('https://cashcue-api.onrender.com/api/settings/preferences', { [key]: value }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setSettings(prev => ({ ...prev, [key]: value }));
@@ -57,7 +57,7 @@ export default function Settings() {
     if (passwords.new !== passwords.confirm) return showFeedback("New passwords do not match.", "error");
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:3000/api/settings/password', {
+      await axios.post('https://cashcue-api.onrender.com/api/settings/password', {
         currentPassword: passwords.current, newPassword: passwords.new
       }, { headers: { Authorization: `Bearer ${token}` } });
       setPasswords({ current: '', new: '', confirm: '' });
@@ -73,7 +73,7 @@ export default function Settings() {
     if (!newTag.name) return;
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:3000/api/settings/tags', newTag, {
+      const res = await axios.post('https://cashcue-api.onrender.com/api/settings/tags', newTag, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const updatedTags = [...settings.categoryTags, res.data];
@@ -89,7 +89,7 @@ export default function Settings() {
   const handleDeleteTag = async (id) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/api/settings/tags/${id}`, {
+      await axios.delete(`https://cashcue-api.onrender.com/api/settings/tags/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const updatedTags = settings.categoryTags.filter(t => t.id !== id);
@@ -104,7 +104,7 @@ export default function Settings() {
   const handleExport = async () => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:3000/api/settings/export', {
+      const res = await axios.get('https://cashcue-api.onrender.com/api/settings/export', {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob' 
       });
@@ -125,7 +125,7 @@ export default function Settings() {
     if (!window.confirm("WARNING: This will permanently delete all your transactions, goals, and assets. Your account and preferences will remain. Proceed?")) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete('http://localhost:3000/api/settings/purge', {
+      await axios.delete('https://cashcue-api.onrender.com/api/settings/purge', {
         headers: { Authorization: `Bearer ${token}` }
       });
       showFeedback("Ledger successfully wiped.", "success");
@@ -138,7 +138,7 @@ export default function Settings() {
     if (!window.confirm("CRITICAL WARNING: This will permanently delete your account and ALL associated data. This cannot be undone. Are you sure?")) return;
     try {
       const token = localStorage.getItem('token');
-      await axios.delete('http://localhost:3000/api/settings/account', {
+      await axios.delete('https://cashcue-api.onrender.com/api/settings/account', {
         headers: { Authorization: `Bearer ${token}` }
       });
       handleLogout();

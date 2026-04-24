@@ -34,7 +34,7 @@ export default function PortfolioAssets() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return handleLogout();
-        const res = await axios.get('http://localhost:3000/api/portfolio', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get('https://cashcue-api.onrender.com/api/portfolio', { headers: { Authorization: `Bearer ${token}` } });
         setData(res.data);
       } catch (error) {
         if (error.response?.status === 401) handleLogout();
@@ -56,7 +56,7 @@ export default function PortfolioAssets() {
       }
       if (!payload.category) payload.category = 'General';
 
-      const res = await axios.post('http://localhost:3000/api/portfolio/asset', payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post('https://cashcue-api.onrender.com/api/portfolio/asset', payload, { headers: { Authorization: `Bearer ${token}` } });
       setData(prev => ({ ...prev, assets: [res.data, ...prev.assets] }));
       setIsFormOpen(false);
       setFormData({ name: '', type: 'BANK', currentValue: '', targetValue: '', category: '' });
@@ -70,7 +70,7 @@ export default function PortfolioAssets() {
     try {
       const token = localStorage.getItem('token');
       const payload = { amount: parseFloat(freelanceData.amount), date: freelanceData.date, source: freelanceData.source };
-      const res = await axios.post('http://localhost:3000/api/portfolio/passive', payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post('https://cashcue-api.onrender.com/api/portfolio/passive', payload, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setData(prev => ({ ...prev, passiveIncomes: [...prev.passiveIncomes, res.data] }));
@@ -86,7 +86,7 @@ export default function PortfolioAssets() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.patch(`http://localhost:3000/api/portfolio/asset/${id}`, { currentValue: parseFloat(finalVal) }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.patch(`https://cashcue-api.onrender.com/api/portfolio/asset/${id}`, { currentValue: parseFloat(finalVal) }, { headers: { Authorization: `Bearer ${token}` } });
       setTimeout(() => {
         setData(prev => ({ ...prev, assets: prev.assets.map(a => a.id === id ? res.data : a) }));
         setUpdateId(null); setActionValue(''); setEfInjectAmount('');
@@ -107,7 +107,7 @@ export default function PortfolioAssets() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:3000/api/portfolio/sell/${id}`, { finalValue: parseFloat(actionValue) }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post(`https://cashcue-api.onrender.com/api/portfolio/sell/${id}`, { finalValue: parseFloat(actionValue) }, { headers: { Authorization: `Bearer ${token}` } });
       setTimeout(() => {
         setData(prev => ({ ...prev, assets: prev.assets.filter(a => a.id !== id) }));
         setSellId(null); setActionValue(''); setProcessingId(null);
@@ -121,7 +121,7 @@ export default function PortfolioAssets() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/api/portfolio/asset/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`https://cashcue-api.onrender.com/api/portfolio/asset/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       setTimeout(() => {
         setData(prev => ({ ...prev, assets: prev.assets.filter(a => a.id !== id) }));
         setProcessingId(null);

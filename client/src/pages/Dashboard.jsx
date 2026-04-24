@@ -62,8 +62,8 @@ export default function Dashboard() {
         if (!token) return handleLogout();
         
         const [txRes, autoRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/transactions', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:3000/api/autopilot', { headers: { Authorization: `Bearer ${token}` } })
+          axios.get('https://cashcue-api.onrender.com/api/transactions', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://cashcue-api.onrender.com/api/autopilot', { headers: { Authorization: `Bearer ${token}` } })
         ]);
 
         setTransactions(txRes.data);
@@ -81,7 +81,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem('token');
       const payload = { ...formData, type: formType, amount: parseFloat(formData.amount) };
-      const res = await axios.post('http://localhost:3000/api/transactions', payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post('https://cashcue-api.onrender.com/api/transactions', payload, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setTransactions([res.data, ...transactions]); 
@@ -99,7 +99,7 @@ export default function Dashboard() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/api/transactions/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`https://cashcue-api.onrender.com/api/transactions/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setTransactions(transactions.filter(t => t.id !== id));

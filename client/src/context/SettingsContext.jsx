@@ -18,7 +18,7 @@ export const SettingsProvider = ({ children }) => {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await axios.get('http://localhost:3000/api/settings', {
+        const res = await axios.get('https://cashcue-api.onrender.com/api/settings', {
           headers: { Authorization: `Bearer ${token}` }
         });
         

@@ -63,8 +63,8 @@ export default function Budgets() {
         if (!token) return handleLogout();
 
         const [budgetRes, txRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/budgets', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:3000/api/transactions', { headers: { Authorization: `Bearer ${token}` } })
+          axios.get('https://cashcue-api.onrender.com/api/budgets', { headers: { Authorization: `Bearer ${token}` } }),
+          axios.get('https://cashcue-api.onrender.com/api/transactions', { headers: { Authorization: `Bearer ${token}` } })
         ]);
 
         setBudgets(budgetRes.data);
@@ -106,7 +106,7 @@ export default function Budgets() {
     setIsSubmitting(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post('http://localhost:3000/api/budgets', {
+      const res = await axios.post('https://cashcue-api.onrender.com/api/budgets', {
         category: formData.category,
         limit: parseFloat(formData.limit)
       }, { headers: { Authorization: `Bearer ${token}` } });
@@ -128,7 +128,7 @@ export default function Budgets() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/api/budgets/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`https://cashcue-api.onrender.com/api/budgets/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setBudgets(budgets.filter(b => b.id !== id));

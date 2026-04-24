@@ -38,10 +38,10 @@ export default function PortfolioHoldings() {
         if (!token) return handleLogout();
         
         const [holdRes, assetRes, indRes, newsRes] = await Promise.all([
-          axios.get('http://localhost:3000/api/portfolio/holdings', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
-          axios.get('http://localhost:3000/api/portfolio', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { assets: [] } })),
-          axios.get('http://localhost:3000/api/market/indices', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: null })),
-          axios.get('http://localhost:3000/api/market/news', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }))
+          axios.get('https://cashcue-api.onrender.com/api/portfolio/holdings', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] })),
+          axios.get('https://cashcue-api.onrender.com/api/portfolio', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { assets: [] } })),
+          axios.get('https://cashcue-api.onrender.com/api/market/indices', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: null })),
+          axios.get('https://cashcue-api.onrender.com/api/market/news', { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: [] }))
         ]);
         
         setHoldings(holdRes.data || []);
@@ -82,7 +82,7 @@ export default function PortfolioHoldings() {
         payload.averageCost = parseFloat(formData.averageCost);
       }
 
-      const res = await axios.post('http://localhost:3000/api/portfolio/buy', payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post('https://cashcue-api.onrender.com/api/portfolio/buy', payload, { headers: { Authorization: `Bearer ${token}` } });
       setHoldings([res.data.holding, ...holdings]);
       
       if (payload.fundingSourceId) {
@@ -100,7 +100,7 @@ export default function PortfolioHoldings() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`http://localhost:3000/api/portfolio/holdings/sell/${id}`, { sellPrice: parseFloat(sellPrice) }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.post(`https://cashcue-api.onrender.com/api/portfolio/holdings/sell/${id}`, { sellPrice: parseFloat(sellPrice) }, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setHoldings(holdings.filter(h => h.id !== id));
@@ -115,7 +115,7 @@ export default function PortfolioHoldings() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:3000/api/portfolio/holdings/${id}`, { currentPrice: parseFloat(updatePrice) }, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.patch(`https://cashcue-api.onrender.com/api/portfolio/holdings/${id}`, { currentPrice: parseFloat(updatePrice) }, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setHoldings(holdings.map(h => h.id === id ? { ...h, currentPrice: parseFloat(updatePrice) } : h));
@@ -130,7 +130,7 @@ export default function PortfolioHoldings() {
     setProcessingId(id);
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:3000/api/portfolio/holdings/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`https://cashcue-api.onrender.com/api/portfolio/holdings/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setHoldings(holdings.filter(h => h.id !== id));
@@ -143,7 +143,7 @@ export default function PortfolioHoldings() {
     setProcessingId('ai-load');
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get('http://localhost:3000/api/market/ai', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.get('https://cashcue-api.onrender.com/api/market/ai', { headers: { Authorization: `Bearer ${token}` } });
       setAiSummary(res.data.summary);
     } catch (error) {
       setAiSummary("AI Engine failed to connect. Please verify your GEMINI_API_KEY.");

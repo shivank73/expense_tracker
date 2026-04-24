@@ -64,7 +64,7 @@ export default function Autopilot() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return handleLogout();
-        const res = await axios.get('http://localhost:3000/api/autopilot', { headers: { Authorization: `Bearer ${token}` } });
+        const res = await axios.get('https://cashcue-api.onrender.com/api/autopilot', { headers: { Authorization: `Bearer ${token}` } });
         setData(res.data);
       } catch (error) {
         if (error.response?.status === 401) handleLogout();
@@ -100,7 +100,7 @@ export default function Autopilot() {
       if (activeTab === 'bills') endpoint = '/api/autopilot/bill';
       if (activeTab === 'debts') endpoint = '/api/autopilot/debt';
 
-      const res = await axios.post(`http://localhost:3000${endpoint}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post(`https://cashcue-api.onrender.com${endpoint}`, payload, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setData(prev => ({ ...prev, [activeTab]: [res.data, ...prev[activeTab]] }));
@@ -119,7 +119,7 @@ export default function Autopilot() {
     try {
       const token = localStorage.getItem('token');
       const apiType = type === 'subscriptions' ? 'sub' : type === 'bills' ? 'bill' : 'debt';
-      await axios.delete(`http://localhost:3000/api/autopilot/${apiType}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      await axios.delete(`https://cashcue-api.onrender.com/api/autopilot/${apiType}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         setData(prev => ({ ...prev, [type]: prev[type].filter(item => item.id !== id) }));
@@ -135,7 +135,7 @@ export default function Autopilot() {
     setProcessingId(id); 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.post(`http://localhost:3000/api/autopilot/approve/${type}/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.post(`https://cashcue-api.onrender.com/api/autopilot/approve/${type}/${id}`, {}, { headers: { Authorization: `Bearer ${token}` } });
       
       setTimeout(() => {
         const stateKey = type === 'sub' ? 'subscriptions' : type === 'bill' ? 'bills' : 'debts';
@@ -155,7 +155,7 @@ export default function Autopilot() {
     setProcessingId(id); 
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.patch(`http://localhost:3000/api/autopilot/debt/${id}`, { amountPaid: paymentAmount }, { headers: { Authorization: `Bearer ${token}` } });
+      const res = await axios.patch(`https://cashcue-api.onrender.com/api/autopilot/debt/${id}`, { amountPaid: paymentAmount }, { headers: { Authorization: `Bearer ${token}` } });
       setTimeout(() => {
         setData(prev => ({ ...prev, debts: prev.debts.map(d => d.id === id ? res.data : d) }));
         setActivePaymentId(null);
