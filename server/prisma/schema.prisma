@@ -1,13 +1,227 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              Int             @id @default(autoincrement())
+  email           String          @unique
+  password        String
+  
+  // --- NEW: Global Preferences ---
+  currency        String          @default("$")
+  theme           String          @default("dark") // 'dark', 'oled', 'light'
+
+  transactions    Transaction[] 
+  budgets         Budget[]
+  subscriptions   Subscription[]
+  recurringBills  RecurringBill[]
+  debts           Debt[]
+  assets          Asset[]
+  passiveIncomes  PassiveIncome[]
+  
+  // --- NEW: Custom Tag Relation ---
+  categoryTags    CategoryTag[]
+}
+
+// NEW: The Transaction table for CashCue
+model Transaction {
+  id          String   @id @default(uuid()) // UUIDs are better for transaction IDs
+  name        String   
+  amount      Float    
+  type        String   // Will be 'income' or 'expense'
+  date        DateTime 
+  category    String   @default("General")
+
+  // UPDATED RELATIONAL HOOK: Links to User Int ID
+  userId      Int      
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Budget {
+  id        String   @id @default(uuid())
+  category  String
+  limit     Float
+  
+  // THE FIX: Changed from String to Int to match your User table
+  userId    Int      
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, category]) 
+}
+
+// --- AUTOPILOT MODELS ---
+
+model Subscription {
+  id              String   @id @default(uuid())
+  name            String
+  price           Float
+  cycle           String   
+  nextPaymentDate DateTime
+  category        String   @default("Entertainment")
+  autoPay         Boolean  @default(false) // <--- ADD THIS LINE
+  websiteUrl      String?
+  notes           String?
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model RecurringBill {
+  id              String   @id @default(uuid())
+  name            String
+  amount          Float
+  frequency       String   // e.g., 'Monthly', 'Quarterly', 'Yearly'
+  nextDueDate     DateTime
+  autoPay         Boolean  @default(false)
+  category        String   @default("Utilities")
+  
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model Debt {
+  id              String   @id @default(uuid())
+  type            String   // 'LENT' or 'BORROWED'
+  personName      String
+  totalAmount     Float
+  amountPaid      Float    @default(0)
+  interestRate    Float?   @default(0) 
+  dueDate         DateTime?
+  status          String   @default("ACTIVE") // 'ACTIVE' or 'SETTLED'
+  
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// --- PORTFOLIO MODELS (The Sandbox) ---
+
+model Asset {
+  id            String   @id @default(uuid())
+  name          String
+  type          String   // 'BANK', 'CASH', 'EMERGENCY', 'TANGIBLE'
+  currentValue  Float
+  initialValue  Float?   // Crucial for Tangibles to calculate ROI
+  targetValue   Float?   // Used exclusively for the Emergency Fund progress bar
+  category      String   @default("General") // Custom tagging integration
+  
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model PassiveIncome {
+  id          String   @id @default(uuid())
+  source      String   
+  amount      Float
+  date        DateTime
+  category    String   @default("Freelance")
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// The Market Investments
+model Holding {
+  id              String    @id @default(uuid())
+  userId          Int      
+  type            String    // 'STOCK', 'MF', 'CRYPTO', 'FD', 'BOND'
+  symbol          String   
+  quantity        Float
+  averageCost     Float    
+  currentPrice    Float    
+  fundingSourceId String?  
+  maturityDate    DateTime? 
+  category        String   
+  
+  // --- NEW WEALTH PARAMETERS ---
+  sipAmount       Float?    // Monthly SIP for Mutual Funds
+  interestRate    Float?    // Annual Interest % for FDs & Bonds
+  
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+// The Dividend / Yield Tracker (Leetcode style)
+model Dividend {
+  id        String   @id @default(uuid())
+  userId    Int 
+  source    String   // 'AAPL Dividend', 'FD Interest'
+  amount    Float
+  date      DateTime
+  createdAt DateTime @default(now())
+}
+
+// ==========================================
+// GOALS & MILESTONES ENGINE
+// ==========================================
+model Goal {
+  id                  String             @id @default(uuid())
+  userId              Int
+  name                String
+  targetAmount        Float
+  deadline            DateTime? 
+  category            String             @default("General")
+  color               String             @default("#0A84FF")
+  monthlyContribution Float              @default(0)     // Drives the ETA Projector
+  isLocked            Boolean            @default(false) // Triggers the Soft Lock UI
+  allocations         GoalAllocation[]   // Fractional Asset Tagging links
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+}
+
+// The "Money Pipe" Linking Table
+model GoalAllocation {
+  id              String   @id @default(uuid())
+  goalId          String
+  sourceId        String   // ID from Bank or Holding
+  sourceType      String   // 'ASSET' (Bank) or 'HOLDING' (Stock)
+  
+  // THE NEW MATH ENGINE:
+  fractionalShare Float    // Tracks ownership percentage (e.g., 0.15 for 15%)
+  lockedAtValue   Float    // The exact dollar amount when the snapshot was taken
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  goal            Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+}
+
+// ==========================================
+// SETTINGS & TAXONOMY
+// ==========================================
+model CategoryTag {
+  id          String   @id @default(uuid())
+  name        String
+  type        String   // MUST be: 'Needs', 'Wants', 'Savings', or 'Income'
+  
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([userId, name]) // Prevents duplicate tags for the same user
 }

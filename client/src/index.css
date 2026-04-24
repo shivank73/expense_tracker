@@ -1,0 +1,151 @@
+/* 1. IMPORT PREMIUM WEBFONT */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* 2. APPLE STANDARD DARK MODE PALETTE */
+  --bg-main: #000000; 
+  --bg-card: #1C1C1E;
+  --bg-elevated: #2C2C2E;
+  --bg-input: #2C2C2E;
+  --border-color: rgba(255, 255, 255, 0.08);
+  
+  --text-primary: #F5F5F7; /* Apple's specific off-white */
+  --text-secondary: #86868B; /* Apple's specific slate gray */
+  
+  /* Apple System Colors */
+  --neon-pink: #FF375F; 
+  --neon-blue: #0A84FF; 
+  --neon-orange: #FF9F0A;
+  --neon-green: #32D74B; 
+  --neon-purple: #BF5AF2;
+  
+  /* 3. SHAPE & ELEVATION ENGINE */
+  --radius-card: 24px;
+  --radius-btn: 14px;
+  --radius-pill: 100px; 
+  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.25); /* Premium depth shadow */
+  
+  --font-main: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  -webkit-font-smoothing: antialiased; 
+  letter-spacing: -0.2px; 
+  transition: background-color 0.3s ease; /* Smooth transition when changing themes */
+}
+
+.app-layout { display: flex; height: 100vh; width: 100vw; overflow: hidden; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px; background-color: var(--bg-main);
+  border-right: 1px solid var(--border-color); display: flex; flex-direction: column; padding: 24px 16px;
+  z-index: 100;
+}
+.sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 0 12px 32px 12px; font-weight: 700; font-size: 20px; letter-spacing: -0.5px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 14px; color: var(--text-secondary);
+  border-radius: var(--radius-btn); cursor: pointer; font-size: 15px; font-weight: 500; transition: all 0.2s ease; margin-bottom: 4px;
+}
+.nav-item:hover { background-color: var(--bg-elevated); color: var(--text-primary); }
+.nav-item.active { background-color: rgba(10, 132, 255, 0.15); color: var(--neon-blue); font-weight: 600; }
+
+.main-content { flex: 1; padding: 40px; overflow-y: auto; position: relative; }
+.content-wrapper { max-width: 1200px; margin: 0 auto; width: 100%; }
+
+h2 { font-size: 32px; font-weight: 700; color: var(--text-primary); letter-spacing: -1px; }
+h3 { letter-spacing: -0.5px; }
+
+input, select {
+  width: 100%; background-color: var(--bg-input); color: var(--text-primary);
+  border: 1px solid var(--border-color); border-radius: var(--radius-btn); 
+  padding: 16px 20px; font-size: 15px; outline: none; font-family: var(--font-main); color-scheme: dark;
+  transition: all 0.2s ease;
+}
+input:focus, select:focus { border-color: var(--neon-blue); box-shadow: 0 0 0 4px rgba(10, 132, 255, 0.1); }
+
+/* ACTION BUTTONS */
+.btn-action {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-color); border-radius: var(--radius-pill);
+  padding: 12px 24px; font-size: 15px; font-weight: 600; 
+  cursor: pointer; font-family: var(--font-main);
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.btn-action:hover { filter: brightness(1.1); transform: scale(0.98); }
+
+.btn-primary {
+  background-color: var(--neon-blue); color: #fff; border: none; border-radius: var(--radius-pill); 
+  padding: 14px 28px; font-weight: 600; cursor: pointer; font-family: var(--font-main); font-size: 15px;
+  box-shadow: 0 4px 14px rgba(10, 132, 255, 0.3);
+  transition: all 0.2s ease;
+}
+.btn-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+.btn-secondary {
+  background-color: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border-color); 
+  border-radius: var(--radius-pill); padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: var(--font-main);
+  transition: all 0.2s ease;
+}
+.btn-secondary:hover { background-color: var(--bg-input); }
+
+.btn-danger { background: transparent; color: var(--neon-pink); border: none; cursor: pointer; font-size: 14px; font-weight: 500; transition: opacity 0.2s;}
+.btn-danger:hover { opacity: 0.7; }
+
+/* THE CARDS (Where the magic happens) */
+.card { 
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color); 
+  border-radius: var(--radius-card); 
+  padding: 28px; 
+  box-shadow: var(--shadow-card); /* The drop shadow for depth */
+  position: relative;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Subtle top inner highlight to mimic glass reflection */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.0), rgba(255,255,255,0.06), rgba(255,255,255,0.0));
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  pointer-events: none;
+}
+
+.card-subtitle { font-size: 13px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; }
+
+.sub-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 20px; border-radius: 16px;
+  background-color: var(--bg-elevated); 
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+.sub-item:hover { 
+  border-color: var(--border-color); 
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); 
+}
+
+.badge { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+
+/* ========================================== */
+/* THEME OVERRIDES: OLED PITCH BLACK          */
+/* ========================================== */
+body[data-theme='oled'] {
+  --bg-main: #000000; 
+  --bg-card: #050505; /* Lifted slightly from pure black so boundaries exist */
+  --bg-elevated: #0C0C0E; /* Distinctly visible above the card */
+  --bg-input: #0A0A0A;
+  
+  --border-color: rgba(255, 255, 255, 0.08); /* Stronger boundary definition */
+  --shadow-card: 0 10px 40px rgba(0, 0, 0, 1); /* Much darker shadow to blend into the OLED abyss */
+}
